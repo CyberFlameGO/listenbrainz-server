@@ -79,27 +79,27 @@ class CanonicalMusicBrainzData(BulkInsertTable):
              ORDER BY ac.id, rpr.id
         """)]
 
-    def get_post_process_queries(self):
-        return ["""
-            WITH all_recs AS (
-                SELECT *
-                     , row_number() OVER (PARTITION BY combined_lookup ORDER BY score) AS rnum
-                  FROM mapping.canonical_musicbrainz_data_tmp
-            ), deleted_recs AS (
-                DELETE
-                  FROM mapping.canonical_musicbrainz_data_tmp
-                 WHERE id IN (SELECT id FROM all_recs WHERE rnum > 1)
-             RETURNING recording_mbid, combined_lookup
-            )
-           INSERT INTO mapping.canonical_recording_redirect_tmp (recording_mbid, canonical_recording_mbid, canonical_release_mbid)
-                SELECT t1.recording_mbid
-                     , t2.recording_mbid AS canonical_recording
-                     , t2.release_mbid AS canonical_release
-                  FROM deleted_recs t1
-                  JOIN all_recs t2
-                    ON t1.combined_lookup = t2.combined_lookup
-                 WHERE t2.rnum = 1;
-        """]
+    # def get_post_process_queries(self):
+    #     return ["""
+    #         WITH all_recs AS (
+    #             SELECT *
+    #                  , row_number() OVER (PARTITION BY combined_lookup ORDER BY score) AS rnum
+    #               FROM mapping.canonical_musicbrainz_data_tmp
+    #         ), deleted_recs AS (
+    #             DELETE
+    #               FROM mapping.canonical_musicbrainz_data_tmp
+    #              WHERE id IN (SELECT id FROM all_recs WHERE rnum > 1)
+    #          RETURNING recording_mbid, combined_lookup
+    #         )
+    #        INSERT INTO mapping.canonical_recording_redirect_tmp (recording_mbid, canonical_recording_mbid, canonical_release_mbid)
+    #             SELECT t1.recording_mbid
+    #                  , t2.recording_mbid AS canonical_recording
+    #                  , t2.release_mbid AS canonical_release
+    #               FROM deleted_recs t1
+    #               JOIN all_recs t2
+    #                 ON t1.combined_lookup = t2.combined_lookup
+    #              WHERE t2.rnum = 1;
+    #     """]
 
     def get_index_names(self):
         return [

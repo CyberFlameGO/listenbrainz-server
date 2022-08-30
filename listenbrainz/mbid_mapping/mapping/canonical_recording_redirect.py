@@ -21,20 +21,20 @@ class CanonicalRecordingRedirect(BulkInsertTable):
     def get_insert_queries(self):
         return []
 
-    def get_post_process_queries(self):
-        return ["""
-            WITH all_rows AS (
-                 SELECT id
-                      , row_number() OVER (PARTITION BY recording_mbid ORDER BY id) AS rnum
-                   FROM mapping.canonical_recording_redirect_tmp
-            )
-            DELETE FROM mapping.canonical_recording_redirect_tmp
-                  WHERE id IN (SELECT id FROM all_rows WHERE rnum > 1)
-        """]
+    # def get_post_process_queries(self):
+    #     return ["""
+    #         WITH all_rows AS (
+    #              SELECT id
+    #                   , row_number() OVER (PARTITION BY recording_mbid ORDER BY id) AS rnum
+    #                FROM mapping.canonical_recording_redirect_tmp
+    #         )
+    #         DELETE FROM mapping.canonical_recording_redirect_tmp
+    #               WHERE id IN (SELECT id FROM all_rows WHERE rnum > 1)
+    #     """]
 
     def get_index_names(self):
         return [("canonical_recording_redirect_ndx_canonical_recording_mbid", "canonical_recording_mbid", False),
-                ("canonical_recording_redirect_ndx_recording_mbid", "recording_mbid", True)]
+                ("canonical_recording_redirect_ndx_recording_mbid", "recording_mbid", False)]
 
     def process_row(self, row):
         assert False

@@ -436,10 +436,10 @@ class BulkInsertTable:
         log(f"{self.table_name}: create indexes")
         self._create_indexes(no_analyze)
 
-        if not no_swap:
-            log(f"{self.table_name}: swap tables and indexes into production.")
-            self.swap_into_production()
-        else:
-            log(f"{self.table_name}: defer swap tables.")
+        # if not no_swap:
+        #     log(f"{self.table_name}: swap tables and indexes into production.")
+        #     self.swap_into_production()
+        # else:
+        #     log(f"{self.table_name}: defer swap tables.")
 
         log(f"{self.table_name}: done")
