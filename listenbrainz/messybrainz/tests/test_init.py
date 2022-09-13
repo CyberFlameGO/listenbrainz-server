@@ -118,6 +118,7 @@ class DataTestCase(TimescaleTestCase):
             self.assertEqual(args["msid1"], received_msid)
 
     def test_insert_all_in_transaction(self):
+        self.maxDiff = None
         submissions: list[dict] = [
             {
                 'artist': 'Frank Ocean',
