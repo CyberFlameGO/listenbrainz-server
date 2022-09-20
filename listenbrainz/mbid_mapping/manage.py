@@ -13,7 +13,7 @@ from mapping.utils import log, CRON_LOG_FILE
 from mapping.release_colors import sync_release_color_table, incremental_update_release_color_table
 from reports.tracks_of_the_year import calculate_tracks_of_the_year
 from reports.top_discoveries import calculate_top_discoveries
-from mapping.mb_metadata_cache import create_mb_metadata_cache
+from mapping.mb_metadata_cache import create_mb_metadata_cache, incremental_update_mb_metadata_cache
 
 
 @click.group()
@@ -111,6 +111,15 @@ def build_mb_metadata_cache(use_lb_conn):
         Build the MB metadata cache that LB uses
     """
     create_mb_metadata_cache(use_lb_conn)
+
+
+@cli.command()
+@click.option("--use-lb-conn/--use-mb-conn", default=True, help="whether to create the tables in LB or MB")
+def update_mb_metadata_cache(use_lb_conn):
+    """
+        Update the MB metadata cache that LB uses incrementally.
+    """
+    incremental_update_mb_metadata_cache(use_lb_conn)
 
 
 def usage(command):
