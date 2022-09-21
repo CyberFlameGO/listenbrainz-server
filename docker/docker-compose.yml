@@ -28,9 +28,11 @@ services:
       POSTGRES_PASSWORD: 'postgres'
 
   rabbitmq:
-    image: rabbitmq:3.8.16
+    image: rabbitmq:3.8.16-management
     volumes:
       - rabbitmq:/var/lib/rabbitmq:z
+    ports:
+      - "15672:15672"
 
   web:
     build:
