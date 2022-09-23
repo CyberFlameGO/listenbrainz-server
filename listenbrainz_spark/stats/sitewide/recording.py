@@ -58,23 +58,26 @@ def get_recordings(table: str, user_listen_count_limit, top_recordings_limit: in
               FROM intermediate_table
           ORDER BY total_listen_count DESC
              LIMIT {top_recordings_limit}
+        ), grouped_stats AS (
+            SELECT sort_array(
+                        collect_list(
+                            struct(
+                                total_listen_count AS listen_count
+                              , recording_name AS track_name
+                              , recording_mbid
+                              , artist_name
+                              , coalesce(artist_credit_mbids, array()) AS artist_mbids
+                              , release_name
+                              , release_mbid
+                            )
+                        )
+                       , false
+                   ) as stats
+              FROM ordered_stats
         )
         SELECT total_count
-             , sort_array(
-                    collect_list(
-                        struct(
-                            total_listen_count AS listen_count
-                          , recording_name AS track_name
-                          , recording_mbid
-                          , artist_name
-                          , coalesce(artist_credit_mbids, array()) AS artist_mbids
-                          , release_name
-                          , release_mbid
-                        )
-                    )
-                   , false
-                ) as stats
-          FROM ordered_stats
+             , stats
+          FROM grouped_stats
           JOIN entity_count
             ON TRUE
     """)

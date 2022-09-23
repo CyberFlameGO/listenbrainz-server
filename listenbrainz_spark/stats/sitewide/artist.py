@@ -41,21 +41,24 @@ def get_artists(table: str, user_listen_count_limit, top_artists_limit: int = SI
               FROM intermediate_table
           ORDER BY total_listen_count DESC
              LIMIT {top_artists_limit}
-        )
-        SELECT total_count
-             , sort_array(
-                    collect_list(
-                        struct(
-                            total_listen_count AS listen_count
-                          , artist_name
-                          , coalesce(artist_credit_mbids, array()) AS artist_mbids
+        ), grouped_stats AS (
+            SELECT sort_array(
+                        collect_list(
+                            struct(
+                                total_listen_count AS listen_count
+                              , artist_name
+                              , coalesce(artist_credit_mbids, array()) AS artist_mbids
+                            )
                         )
-                    )
-                    , false
-               ) AS stats
-          FROM ordered_stats
-          JOIN entity_count
-            ON TRUE
+                        , false
+                   ) AS stats
+              FROM ordered_stats
+        )
+            SELECT total_count
+                 , stats
+              FROM grouped_stats 
+              JOIN entity_count
+                ON TRUE
     """)
 
     return result.toLocalIterator()
