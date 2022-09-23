@@ -54,10 +54,17 @@ def get_releases(table: str, user_listen_count_limit, top_releases_limit: int = 
                  , release_mbid
                  , lower(artist_name)
                  , artist_credit_mbids
+        ), entity_count AS (
+            SELECT count(*) AS total_count
+              FROM intermediate_table
+        ), ordered_stats AS (
+            SELECT *
+              FROM intermediate_table
           ORDER BY total_listen_count DESC
              LIMIT {top_releases_limit}
         )
-        SELECT sort_array(
+        SELECT total_count
+             , sort_array(
                     collect_list(
                         struct(
                             total_listen_count AS listen_count
@@ -69,7 +76,9 @@ def get_releases(table: str, user_listen_count_limit, top_releases_limit: int = 
                     )
                    , false
                 ) as stats
-          FROM intermediate_table
+          FROM ordered_stats
+          JOIN entity_count
+            ON TRUE
         """)
 
     return result.toLocalIterator()
