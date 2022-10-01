@@ -459,8 +459,12 @@ export default class SpotifyPlayer
       duration,
       track_window: { current_track },
     } = playerState;
+    // eslint-disable-next-line no-console
+    console.log(playerState);
 
     const { currentSpotifyTrack, durationMs } = this.state;
+    // eslint-disable-next-line no-console
+    console.log(currentSpotifyTrack);
     const { playerPaused } = this.props;
     const {
       onPlayerPausedChange,
