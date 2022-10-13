@@ -122,6 +122,12 @@ def update_mb_metadata_cache(use_lb_conn):
     incremental_update_mb_metadata_cache(use_lb_conn)
 
 
+@cli.command()
+def cron_build_mb_metadata_cache():
+    create_canonical_musicbrainz_data(False)
+    create_mb_metadata_cache(True)
+
+
 def usage(command):
     with click.Context(command) as ctx:
         click.echo(command.get_help(ctx))
